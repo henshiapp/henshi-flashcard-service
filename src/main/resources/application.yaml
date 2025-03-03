@@ -2,23 +2,48 @@ spring:
   application:
     name: flashcard-service
 
+  flyway:
+    locations: classpath:db/migrations
+
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  datasource:
+    url: jdbc:postgresql://${database.host}:${database.port}/${database.name}
+    username: ${database.username}
+    password: ${database.password}
+    hikari:
+      auto-commit: false
+      connectionInitSql: SET TIMEZONE TO 'UTC'
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      # deals with single and multi-valued JWT claims
+      accept-single-value-as-array: true
+
+  security:
+    oauth2:
+      resourceserver:
+        opaquetoken:
+          introspection-uri: ${OAUTH2_URI}
+          client-id: ${OAUTH2_CLIENT_ID}
+          client-secret: ${OAUTH2_CLIENT_SECRET}
+
 server:
   port: ${PORT:8080}
 
-  r2dbc:
-    url: r2dbc:postgresql:////${database.host}:${database.port}/${database.name}
-    username: ${database.username}
-    password: ${database.password}
-
-  liquibase:
-    change-log: classpath:/db/db.changelog.yaml
-    url: jdbc:postgresql://${database.host}:${database.port}/${database.name}
-    user: ${database.username}
-    password: ${database.password}
-
 database:
-  name: ${DATABASE_NAME:flashcard}
-  host: ${DATABASE_HOST:localhost}
-  port: ${DATABASE_PORT:5432}
-  username: ${DATABASE_USERNAME:henshi}
-  password: ${DATABASE_PASSWORD:henshi}
+  name: ${DATABASE_NAME}
+  host: ${DATABASE_HOST}
+  port: ${DATABASE_PORT}
+  username: ${DATABASE_USERNAME}
+  password: ${DATABASE_PASSWORD}
+
+henshi:
+  allowed-origins: ${ALLOWED_ORIGINS}
